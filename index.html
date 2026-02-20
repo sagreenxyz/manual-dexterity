@@ -2,18 +2,156 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manual Dexterity</title>
+  <title>Documentation</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="description" content="Manual Dexterity Documentation">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/buble.css">
+  <style>
+    /* Full-width navbar at the top */
+    .app-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 60px;
+      margin: 0;
+      padding: 0 20px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Adjust main content and sidebar to be below navbar */
+    body .sidebar,
+    body .sidebar-toggle {
+      top: 60px;
+    }
+    
+    /* Adjust sidebar padding to prevent text overlap with toggle button */
+    .sidebar {
+      padding-top: 10px;
+    }
+    
+    .sidebar > h1 {
+      margin-top: 0;
+      padding-left: 50px;
+    }
+    
+    .sidebar ul {
+      padding-left: 50px !important;
+    }
+    
+    .sidebar-toggle {
+      background-color: transparent;
+    }
+    
+    .content {
+      padding-top: 60px;
+    }
+    
+    /* Multi-level navbar dropdown support */
+    .app-nav li {
+      position: relative;
+    }
+    
+    /* First level dropdown */
+    .app-nav > ul > li > ul {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      min-width: 240px;
+      width: max-content;
+      max-width: 600px;
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      margin-top: 0;
+      z-index: 2001;
+      overflow: visible;
+    }
+    
+    /* Add padding to parent li to bridge the gap */
+    .app-nav > ul > li {
+      padding-bottom: 10px;
+    }
+    
+    /* Second and deeper level dropdowns - positioned relative to parent */
+    .app-nav ul ul ul {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 100%;
+      min-width: 240px;
+      width: max-content;
+      max-width: 600px;
+      background: #fff;
+      border: 1px solid #ddd;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-left: 2px;
+      overflow: visible;
+      z-index: 2002;
+    }
+    
+    /* Show dropdown on hover - only for direct children */
+    .app-nav li:hover > ul {
+      display: block;
+    }
+    
+    /* Hide all nested dropdowns when not hovering their parent */
+    .app-nav ul ul li:not(:hover) > ul {
+      display: none;
+    }
+    
+    /* Dropdown item styling */
+    .app-nav ul ul li {
+      display: block;
+      margin: 0;
+      border-bottom: 1px solid #f0f0f0;
+      position: relative;
+    }
+    
+    .app-nav ul ul li:last-child {
+      border-bottom: none;
+    }
+    
+    .app-nav ul ul a {
+      display: block;
+      padding: 12px 16px;
+      color: #2c3e50;
+      text-decoration: none;
+      white-space: nowrap;
+      border-left: 3px solid transparent;
+    }
+    
+    .app-nav ul ul a:hover {
+      background: #f8f9fa;
+      border-left-color: #42b983;
+      color: #42b983;
+    }
+    
+    /* Indicator for items with submenus */
+    .app-nav li > ul > li:has(ul) > a::after {
+      content: ' ›';
+      float: right;
+      margin-left: 12px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: 'Manual Dexterity',
-      repo: 'sagreenxyz/manual-dexterity',
+      name: 'Documentation',
       loadNavbar: true,
       auto2top: true,
     }

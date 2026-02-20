@@ -1,4 +1,4 @@
-# Manual Dexterity
+# Documentation 1
 
 Welcome to the Manual Dexterity documentation site, powered by [Docsify](https://docsify.js.org/).
 
