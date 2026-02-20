@@ -145,6 +145,114 @@
       margin-left: 12px;
       font-weight: bold;
     }
+
+    /* Hamburger button - hidden on desktop */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      margin-left: auto;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #2c3e50;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .nav-toggle {
+        display: flex;
+      }
+
+      .app-nav > ul {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 0;
+        margin: 0;
+        max-height: calc(100vh - 60px);
+        overflow-y: auto;
+        z-index: 1999;
+      }
+
+      .app-nav > ul.open {
+        display: flex;
+      }
+
+      .app-nav > ul > li {
+        padding-bottom: 0;
+        border-bottom: 1px solid #f0f0f0;
+        width: 100%;
+      }
+
+      .app-nav > ul > li > a {
+        display: block;
+        padding: 14px 20px;
+        color: #2c3e50;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      /* On mobile, dropdowns stack below their parent */
+      .app-nav > ul > li > ul,
+      .app-nav ul ul ul {
+        display: none;
+        position: static;
+        box-shadow: none;
+        border: none;
+        border-top: 1px solid #f0f0f0;
+        margin: 0;
+        padding-left: 16px;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+      }
+
+      .app-nav > ul > li > ul.open,
+      .app-nav ul ul li > ul.open {
+        display: block;
+      }
+
+      /* Override hover-based show on mobile */
+      .app-nav li:hover > ul {
+        display: none;
+      }
+
+      .app-nav ul ul li {
+        border-bottom: 1px solid #f5f5f5;
+      }
+
+      .app-nav ul ul a {
+        white-space: normal;
+        padding: 10px 16px;
+      }
+
+      /* Arrow indicator for items with submenus on mobile */
+      .app-nav li.has-children > a::after {
+        content: ' ▾';
+        float: right;
+        font-weight: bold;
+      }
+
+      .app-nav li.has-children.open > a::after {
+        content: ' ▴';
+      }
+    }
   </style>
 </head>
 <body>
@@ -157,5 +265,75 @@
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script>
+    // Mobile navigation: inject hamburger button and handle touch/click for dropdowns
+    var mobileNavSetup = false;
+
+    function setupMobileNav() {
+      var nav = document.querySelector('.app-nav');
+      if (!nav) return;
+
+      // Add hamburger toggle button if not already present
+      if (!nav.querySelector('.nav-toggle')) {
+        var toggle = document.createElement('button');
+        toggle.className = 'nav-toggle';
+        toggle.setAttribute('aria-label', 'Toggle navigation');
+        toggle.innerHTML = '<span></span><span></span><span></span>';
+        nav.appendChild(toggle);
+
+        toggle.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var ul = nav.querySelector('ul');
+          if (ul) ul.classList.toggle('open');
+        });
+      }
+
+      // Mark items that have submenus and add click listeners (only once per element)
+      var items = nav.querySelectorAll('li');
+      items.forEach(function (li) {
+        var subMenu = li.querySelector(':scope > ul');
+        if (subMenu && !li.dataset.mobileListenerAdded) {
+          li.classList.add('has-children');
+          li.dataset.mobileListenerAdded = 'true';
+          li.addEventListener('click', function (e) {
+            var isMobile = window.matchMedia('(max-width: 768px)').matches;
+            if (!isMobile) return;
+            e.stopPropagation();
+            var isOpen = li.classList.contains('open');
+            // Close siblings
+            var siblings = li.parentNode.querySelectorAll(':scope > li.has-children');
+            siblings.forEach(function (s) {
+              if (s !== li) {
+                s.classList.remove('open');
+                var sMenu = s.querySelector(':scope > ul');
+                if (sMenu) sMenu.classList.remove('open');
+              }
+            });
+            li.classList.toggle('open', !isOpen);
+            subMenu.classList.toggle('open', !isOpen);
+          });
+        }
+      });
+
+      // Add document click listener only once to close nav when clicking outside
+      if (!mobileNavSetup) {
+        mobileNavSetup = true;
+        document.addEventListener('click', function () {
+          var ul = document.querySelector('.app-nav > ul');
+          if (ul) ul.classList.remove('open');
+        });
+      }
+    }
+
+    // Watch for docsify to render the navbar; disconnect once setup is complete
+    var navObserver = new MutationObserver(function () {
+      var nav = document.querySelector('.app-nav');
+      if (nav) {
+        navObserver.disconnect();
+        setupMobileNav();
+      }
+    });
+    navObserver.observe(document.body, { childList: true, subtree: true });
+  </script>
 </body>
 </html>
